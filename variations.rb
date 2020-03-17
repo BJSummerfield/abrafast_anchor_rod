@@ -13,6 +13,8 @@ max_length = 288
 increments = 1
 skus = []
 
+
+
 def runner(types, grades, finishes, diameters, lengths, min_length, max_length, increments, skus)
   populate_lengths(lengths, min_length,max_length,increments)
   variations(types, grades, finishes, diameters, lengths, skus)
@@ -22,7 +24,8 @@ end
 
 def item_create(type,grade,finish,diameter,length,skus)
   a = {'type' => type ,"grade" => grade, 'finish' => finish,'diameter' => diameter, 'length' => length}
-  item = {'Part Number' => "", 'Description' => "", "Cost" => "", "Weight" => ""}
+  # item = {'Part Number' => "", 'Description' => "", "Cost" => "", "Weight" => ""}
+  item = Hash.new
   item['Part Number'] = create_part_number(a)
   item['Description'] = create_description(a)
   item['Cost'] = create_cost(a)
@@ -32,10 +35,10 @@ end
 
 def create_weight(a)
   d_weight = a['diameter']['weight']
-  mult = a['length'] / 4
+  mult = a['length'] / 4.0
   weight = ((d_weight * mult) / 10000.00)
   weight += 0.1
-  return weight
+  return weight.round(4)
 end
 
 def create_cost(a)
@@ -46,17 +49,14 @@ def create_cost(a)
   mult += a['grade']['cost']
   c += a['diameter']['cost']
   c = c * mult
-  c = ((c * (a['length']/4)) / 100000.00).round(4)
-  # p "sell price = #{c}"
+  c = ((c * (a['length']/4.0)) / 100000.00).round(4)
   return c
 end
-
-
 
 def create_description(a)
   length = notate(a['length'])
   string = ""
-  string += 'ASTM ' + a['grade']['grade'] + " "
+  string += 'ASTM ' + a['grade']['grade'] + " - "
   string += a['finish']['finish'].capitalize + " "
   string += a['type']['type'].split.map(&:capitalize)*' ' + " "
   string += "- #{a['diameter']['diameter']}" + " "
@@ -64,21 +64,21 @@ def create_description(a)
   return string
 end
 
-def notate(num)
-  i = 0
-  j = 0
-  while num > 0
-    num -= 48
-    if num >= 0
-      i += 1
+def notate(quarter_inches)
+  feet = 0
+  inches = 0
+  while quarter_inches > 0
+    quarter_inches -= 48
+    if quarter_inches >= 0
+      feet += 1
     end
   end
-  while num < 0
-    num += 4
-    j +=1
+  while quarter_inches < 0
+    quarter_inches += 4
+    inches +=1
   end
-  j = (j-12) * -1 if j != 0
-  return length_message(i,j,num)
+  inches = (inches-12) * -1 if inches != 0
+  return length_message(feet, inches, quarter_inches)
 end
 
 def length_message (feet, inches, quarter)
@@ -95,7 +95,8 @@ end
 def create_part_number(a)
   string = ""
   string += a['type']['type'].split.map(&:chr).join.upcase
-  string += a['grade']['grade'].gsub("Grade ","")
+  string += "-"
+  string += a['grade']['grade'].gsub(" Grade ","-")
   string += a['finish']['finish'].split.map(&:chr).join.upcase
   string += "-"
   string += a['diameter']['diameter'].gsub('/','').gsub('"','')
@@ -122,7 +123,7 @@ def variations(types, grades, finishes, diameters, lengths, skus)
 end
 
 def check_compatability(grade,diameter)
-  if grade['grade'] == "F1554-Grade 105"
+  if grade['grade'] == "F1554 Grade 105"
     d = diameter['diameter']
     if d == '1/2"-13' || d == '5/8"-11' || d == '7/8"-9'
       return false
@@ -158,9 +159,8 @@ def create_csv(skus)
   end
 end
 
+# p item_create(TYPES[0],GRADES[0],FINISHES[0],DIAMETERS[0],25,skus)
+
+
+
 runner(TYPES,GRADES,FINISHES,DIAMETERS,lengths, min_length,max_length,increments, skus)
-
-
-
-
-
