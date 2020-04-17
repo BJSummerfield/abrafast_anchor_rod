@@ -19,47 +19,47 @@ def runner(types, grades, finishes, diameters, lengths, min_length, max_length, 
   populate_lengths(lengths, min_length,max_length,increments)
   variations(types, grades, finishes, diameters, lengths, skus)
   # p skus.length
-  create_csv(skus)
+  # create_csv(skus)
 end
 
 def item_create(type,grade,finish,diameter,length,skus)
-  a = {'type' => type ,"grade" => grade, 'finish' => finish,'diameter' => diameter, 'length' => length}
+  new_part = {'type' => type ,"grade" => grade, 'finish' => finish,'diameter' => diameter, 'length' => length}
   # item = {'Part Number' => "", 'Description' => "", "Cost" => "", "Weight" => ""}
   item = Hash.new
-  item['Part Number'] = create_part_number(a)
-  item['Description'] = create_description(a)
-  item['Cost'] = create_cost(a)
-  item['Weight'] = create_weight(a)
+  item['Part Number'] = create_part_number(new_part)
+  item['Description'] = create_description(new_part)
+  item['Cost'] = create_cost(new_part)
+  item['Weight'] = create_weight(new_part)
   return item
 end
 
-def create_weight(a)
-  d_weight = a['diameter']['weight']
-  mult = a['length'] / 4.0
+def create_weight(new_part)
+  d_weight = new_part['diameter']['weight']
+  mult = new_part['length'] / 4.0
   weight = ((d_weight * mult) / 10000.00)
   weight += 0.1
   return weight.round(4)
 end
 
-def create_cost(a)
+def create_cost(new_part)
   c = 0
   mult = 0
-  mult += a['finish']['cost']
-  mult += a['type']['cost']
-  mult += a['grade']['cost']
-  c += a['diameter']['cost']
+  mult += new_part['finish']['cost']
+  mult += new_part['type']['cost']
+  mult += new_part['grade']['cost']
+  c += new_part['diameter']['cost']
   c = c * mult
-  c = ((c * (a['length']/4.0)) / 100000.00).round(4)
+  c = ((c * (new_part['length']/4.0)) / 100000.00).round(4)
   return c
 end
 
-def create_description(a)
-  length = notate(a['length'])
+def create_description(new_part)
+  length = notate(new_part['length'])
   string = ""
-  string += 'ASTM ' + a['grade']['grade'] + " - "
-  string += a['finish']['finish'].capitalize + " "
-  string += a['type']['type'].split.map(&:capitalize)*' ' + " "
-  string += "- #{a['diameter']['diameter']}" + " "
+  string += 'ASTM ' + new_part['grade']['grade'] + " - "
+  string += new_part['finish']['finish'].capitalize + " "
+  string += new_part['type']['type'].split.map(&:capitalize)*' ' + " "
+  string += "- #{new_part['diameter']['diameter']}" + " "
   string += "x #{length}"
   return string
 end
@@ -92,16 +92,16 @@ def length_message (feet, inches, quarter)
   return string
 end
 
-def create_part_number(a)
+def create_part_number(new_part)
   string = ""
-  string += a['type']['type'].split.map(&:chr).join.upcase
+  string += new_part['type']['type'].split.map(&:chr).join.upcase
   string += "-"
-  string += a['grade']['grade'].gsub(" Grade ","-")
-  string += a['finish']['finish'].split.map(&:chr).join.upcase
+  string += new_part['grade']['grade'].gsub(" Grade ","-")
+  string += new_part['finish']['finish'].split.map(&:chr).join.upcase
   string += "-"
-  string += a['diameter']['diameter'].gsub('/','').gsub('"','')
+  string += new_part['diameter']['diameter'].gsub('/','').gsub('"','')
   string += "-"
-  string += a['length'].to_s
+  string += new_part['length'].to_s
   return string
 end
 

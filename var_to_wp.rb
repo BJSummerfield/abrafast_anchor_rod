@@ -1,6 +1,6 @@
 require 'csv'
 
-list = CSV.read('../csv/atr.CSV')
+list = CSV.read('../csv/ser.CSV')
 
 def runner(list)
   list = convert_to_hash(list)
@@ -39,7 +39,7 @@ def generate_template(row)
     'Weight (lbs)' => row['Weight'],
     'Regular price' => row['Cost'],
     'MPN' => row['Part Number'],
-    'Images' => 'https://abrafast.store/wp-content/uploads/2020/03/all_threaded_rod.jpg',
+    'Images' => 'https://abrafast.store/wp-content/uploads/2020/03/single-end-rod.jpeg',
     "Categories" => "Anchor Bolts &amp; Sag Rods",
     'Visibility in catalog' => 'search'
   }
@@ -52,8 +52,7 @@ def write_import(list)
       input << k
     end
     csv << input
-    new_list = list[1..list.length-1]
-    new_list.each do |row|
+    list.each do |row|
       input = []
       row.each do |k,v|
         input << v
