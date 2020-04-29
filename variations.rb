@@ -18,8 +18,8 @@ skus = []
 def runner(types, grades, finishes, diameters, lengths, min_length, max_length, increments, skus)
   populate_lengths(lengths, min_length,max_length,increments)
   variations(types, grades, finishes, diameters, lengths, skus)
-  # p skus.length
-  # create_csv(skus)
+  p skus.length
+  create_csv(skus)
 end
 
 def item_create(type,grade,finish,diameter,length,skus)

@@ -1,7 +1,7 @@
 require 'csv'
 
-file = CSV.read("../split/master.csv")
-rows = 2000
+file = CSV.read("./csv/import_to_wp.csv")
+rows = 300000
 
 def runner(file, rows)
   header = set_header(file)
@@ -25,7 +25,7 @@ def write_chunks (header, chunks)
 end
 
 def write_file (array_to_write, file_number)
-  CSV.open("../split/split#{file_number}.csv", "wb") do |csv|
+  CSV.open("./csv/split#{file_number}.csv", "wb") do |csv|
     array_to_write.each do |row|
       csv << row
     end

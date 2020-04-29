@@ -11,8 +11,6 @@ def start(import_file)
   puts time.real
 end
 
-import_file = CSV.read('./csv/split145.csv')
-
 def runner(import_file)
   csv_hash = convert_to_hash(import_file)
   puts "CSV Formated"
@@ -29,7 +27,7 @@ def write_products(csv_hash, client)
   puts "WP_POSTS CSV Created"
   write_table('wp_posts.csv', 'wp_posts', client)
   puts "WP_POSTS Loaded To Database"
-  wp_posts_ids = client.query("Select ID, post_title from wp_posts where post_author = '2'")
+  wp_posts_ids = client.query("Select * from wp_posts where post_author = '2' and post_type = 'product' and post_date >= NOW() - interval 5.5 hour order by id;")
   puts "WP_POST ID's Selected"
   match_ids(csv_hash, wp_posts_ids)
   puts "PRODUCT ID's MATCHED"
@@ -75,8 +73,8 @@ def generate_wp_posts_hash(product)
   hash = {}
   hash['ID'] = nil
   hash['post_author'] = '2'
-  hash['post_date'] = 'NOW()'
-  hash['post_date_gmt'] = 'NOW()'
+  hash['post_date'] = Time.now.strftime('%Y-%m-%d %H:%M:%S')
+  hash['post_date_gmt'] = Time.now.strftime('%Y-%m-%d %H:%M:%S')
   hash['post_content'] = product['Description'].gsub("'","\\\\'")
   hash['post_title'] = product['Name'].gsub("'","\\\\'")
   hash['post_excerpt'] = nil
@@ -87,8 +85,8 @@ def generate_wp_posts_hash(product)
   hash['post_name'] = product['Name'].gsub(' - ', '-').gsub("'","").gsub('"',"").gsub('/','-').gsub(" ", "-").downcase
   hash['to_ping'] = nil
   hash['pinged'] = nil
-  hash['post_modified'] = 'NOW()'
-  hash['post_modified_gmt'] = 'NOW()'
+  hash['post_modified'] = Time.now.strftime('%Y-%m-%d %H:%M:%S')
+  hash['post_modified_gmt'] = Time.now.strftime('%Y-%m-%d %H:%M:%S')
   hash['post_content_filtered'] = nil
   hash['post_parent'] = '0'
   hash['guid'] = "https://abrafast.store/product/#{hash['post_name']}/"
@@ -152,7 +150,7 @@ def generate_wp_postmeta_hash(product)
   hash['_downloadable'] = 'no'
   hash['_download_limit'] = '-1'
   hash['_download_expiry'] = '-1'
-  hash['_thumbnail_id'] = '6910' #'query_ID(client, 'wp_posts', 'attachment', 'guid', product['Images']).to_s'
+  hash['_thumbnail_id'] = '5096'
   hash['_stock'] = 'NULL'
   hash['_stock_status'] = 'instock' 
   hash['_wc_average_rating'] = '0'
@@ -271,7 +269,10 @@ def match_ids(csv_hash, wp_posts_ids)
   wp_posts_ids.each do |entry|
     wp_posts_ids_total += 1
   end
+  p wp_posts_ids_total
+  p csv_hash.length
   start = wp_posts_ids_total - csv_hash.length
+  p start
   i = 0
   wp_posts_ids.each do |row|
     if i >= start
@@ -298,4 +299,9 @@ def convert_to_hash(file)
   return array
 end
 
+
+
+import_file = CSV.read("./csv/split3.csv")
+
 start(import_file)
+  

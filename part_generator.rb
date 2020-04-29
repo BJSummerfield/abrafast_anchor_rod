@@ -18,7 +18,7 @@ skus = []
 def runner(types, grades, finishes, diameters, lengths, min_length, max_length, increments, skus)
   populate_lengths(lengths, min_length,max_length,increments)
   variations(types, grades, finishes, diameters, lengths, skus)
-  p skus.length
+  skus.length
   # create_csv(skus)
 end
 
@@ -82,7 +82,7 @@ def populate_lengths(lengths, min_length, max_length, increments)
 end
 
 def create_csv(skus)
-  CSV.open("../csv/ser.CSV", "wb") do |csv|
+  CSV.open("./csv/test_import.CSV", "wb") do |csv|
     input = []
     skus[0].each do |k,v|
       input << k

@@ -1,6 +1,6 @@
 require 'csv'
 
-list = CSV.read('../csv/ser.CSV')
+list = CSV.read('./csv/test_import.CSV')
 
 def runner(list)
   list = convert_to_hash(list)
@@ -46,7 +46,7 @@ def generate_template(row)
 end
 
 def write_import(list)
-  CSV.open('../csv/import_to_wp.csv', 'wb') do |csv|
+  CSV.open('./csv/import_to_wp.csv', 'wb') do |csv|
     input = []
     list[0].each do |k,v|
       input << k
